@@ -20,8 +20,45 @@ class Categoria(db.Model):
         self.cat_nom = cat_nom
         self.cat_desp = cat_desp
 
-db.create_all()
+with app.app_context():
+    db.create_all()
 
+#Esquema categoria
+class CategoriaSchema(ma.Schema):
+    class Meta:
+        fields =('cat_id','cat_nom','cat_desp')
+
+#una sola respuesta
+categoria_schema = CategoriaSchema()
+#cuando sean muchas respuestas
+categorias_schema = CategoriaSchema(many=True)
+
+#GET############
+@app.route('/categoria', methods=['GET'])
+def get_categorias():
+    all_categorias = Categoria.query.all()
+    result = categorias_schema.dump(all_categorias)
+    return jsonify(result)
+
+#GET X ID######
+@app.route('/categoria', methods=['GET'])
+def get_catrgoria_x_id(id):
+    una_categoria = Categoria.query.get(id)
+    return categoria_schema.jsonify(una_categoria)
+
+
+#POST#################
+@app.route('/categoria', methods=['POST'])
+def insert_categoria():
+    data = request.get_json(force=True)
+    cat_nom = data['cat_nom']
+    cat_desp = data['cat_desp']
+    
+    nuevocategoria = Categoria(cat_nom, cat_desp)
+    
+    db.session.add(nuevocategoria)
+    db.session.commit()
+    return categoria_schema.jsonify(nuevocategoria)
 
 #Mensaje de Bienvenida
 @app.route('/', methods=['GET'])
