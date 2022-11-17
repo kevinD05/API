@@ -60,6 +60,32 @@ def insert_categoria():
     db.session.commit()
     return categoria_schema.jsonify(nuevocategoria)
 
+
+#put#################
+@app.route('/categoria/<id>', methods=['PUT'])
+def update_categoria(id):
+    actulizarcategoria = Categoria.query.get(id)
+
+    data = request.get_json(force=True)
+    cat_nom = data['cat_nom']
+    cat_desp = data['cat_desp']
+
+    actulizarcategoria.cat_nom = cat_nom
+    actulizarcategoria.cat_desp = cat_desp
+
+    db.session.commit()
+
+    return categoria_schema.jsonify(actulizarcategoria) 
+
+@app.route('/categoria/<id>', methods=['DELETE'])
+def delete_categoria(id):
+    eliminarcategoria = Categoria.query.get(id)
+    db.session.delete(eliminarcategoria)
+    db.session.commit()
+    return categoria_schema.jsonify(eliminarcategoria)
+
+
+
 #Mensaje de Bienvenida
 @app.route('/', methods=['GET'])
 def index():
